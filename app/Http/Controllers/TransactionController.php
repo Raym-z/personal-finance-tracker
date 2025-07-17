@@ -74,7 +74,17 @@ class TransactionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'description' => 'required|string|max:255',
+            'amount' => 'required|numeric',
+            'type' => 'required|in:income,expense',
+        ]);
+
+        $user = Auth::user();
+        $transaction = $user->transactions()->findOrFail($id);
+        $transaction->update($request->only('description', 'amount', 'type'));
+
+        return redirect()->route('dashboard')->with('success', 'Transaction updated!');
     }
 
     /**
@@ -82,6 +92,10 @@ class TransactionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = Auth::user();
+        $transaction = $user->transactions()->findOrFail($id);
+        $transaction->delete();
+
+        return redirect()->route('dashboard')->with('success', 'Transaction deleted!');
     }
 }

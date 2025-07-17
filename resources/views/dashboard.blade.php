@@ -84,6 +84,9 @@
                             </form>
                         </div>
                     </div>
+                    @if(session('success'))
+                    <div class="alert alert-success">{{ session('success') }}</div>
+                    @endif
                     <div style="max-height: 300px; overflow-y: auto; padding-right: 12px;">
                         <ul class="list-group list-group-flush">
                             @forelse ($recentTransactions as $transaction)
@@ -92,9 +95,20 @@
                                     <span class="fw-semibold">{{ $transaction->description }}</span>
                                     <span class="text-muted small d-block">{{ ucfirst($transaction->type) }}</span>
                                 </span>
-                                <span
-                                    class="fw-bold {{ $transaction->type === 'income' ? 'text-success' : 'text-danger' }}">
-                                    {{ $transaction->type === 'income' ? '+' : '-' }}${{ number_format($transaction->amount, 2) }}
+                                <span>
+                                    <span
+                                        class="fw-bold {{ $transaction->type === 'income' ? 'text-success' : 'text-danger' }}">
+                                        {{ $transaction->type === 'income' ? '+' : '-' }}${{ number_format($transaction->amount, 2) }}
+                                    </span>
+                                    <a href="{{ route('transactions.edit', $transaction->id) }}"
+                                        class="btn btn-sm btn-outline-primary ms-2">Edit</a>
+                                    <form action="{{ route('transactions.destroy', $transaction->id) }}" method="POST"
+                                        class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger ms-1"
+                                            onclick="return confirm('Delete this transaction?')">Delete</button>
+                                    </form>
                                 </span>
                             </li>
                             @empty
