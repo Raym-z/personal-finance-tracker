@@ -12,7 +12,7 @@
             <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('transactions.index') }}">Transactions</a>
             <a class="nav-link fw-semibold text-dark mx-3" href="#">Budgets & Goals</a>
             <a class="nav-link fw-semibold text-dark mx-3" href="#">Reports & Insights</a>
-            <a class="nav-link fw-semibold text-dark mx-3" href="#">Settings</a>
+            <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('settings.index') }}">Settings</a>
             <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('profile.edit') }}">Profile</a>
             <form method="POST" action="{{ route('logout') }}" class="d-inline">
                 @csrf

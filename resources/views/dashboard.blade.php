@@ -2,10 +2,10 @@
 
 @section('content')
 <div class="container py-5">
-    <div class="row mb-4">
+    <div class="row mb-2">
         <div class="col-12 col-md-8">
             <h1 class="fw-bold mb-3" style="color: #1a202c;">Welcome back, {{ Auth::user()->name }}!</h1>
-            <p class="text-muted mb-4">Here’s an overview of your finances at a glance.</p>
+            <p class="text-muted mb-4">Here's an overview of your finances at a glance.</p>
         </div>
     </div>
 
@@ -40,7 +40,7 @@
     <div class="row g-4">
         <!-- Recent Transactions -->
         <div class="col-12 col-lg-6">
-            <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card border-0 shadow-sm rounded-4">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="card-title fw-semibold mb-0" style="color: #2563eb;">Recent Transactions</h5>
@@ -49,14 +49,7 @@
                                 class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center p-0"
                                 type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false"
                                 style="width: 48px; height: 48px;">
-                                <svg viewBox="0 0 24 24" fill="none" width="22" height="22"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <g id="SVGRepo_iconCarrier">
-                                        <path fill-rule="evenodd" clip-rule="evenodd"
-                                            d="M4.95301 2.25C4.96862 2.25 4.98429 2.25 5.00001 2.25L19.047 2.25C19.7139 2.24997 20.2841 2.24994 20.7398 2.30742C21.2231 2.36839 21.6902 2.50529 22.0738 2.86524C22.4643 3.23154 22.6194 3.68856 22.6875 4.16405C22.7501 4.60084 22.7501 5.14397 22.75 5.76358L22.75 6.54012C22.75 7.02863 22.75 7.45095 22.7136 7.80311C22.6743 8.18206 22.5885 8.5376 22.3825 8.87893C22.1781 9.2177 21.9028 9.4636 21.5854 9.68404C21.2865 9.8917 20.9045 10.1067 20.4553 10.3596L17.5129 12.0159C16.8431 12.393 16.6099 12.5288 16.4542 12.6639C16.0966 12.9744 15.8918 13.3188 15.7956 13.7504C15.7545 13.9349 15.75 14.1672 15.75 14.8729L15.75 17.605C15.7501 18.5062 15.7501 19.2714 15.6574 19.8596C15.5587 20.4851 15.3298 21.0849 14.7298 21.4602C14.1434 21.827 13.4975 21.7933 12.8698 21.6442C12.2653 21.5007 11.5203 21.2094 10.6264 20.8599L10.5395 20.826C10.1208 20.6623 9.75411 20.519 9.46385 20.3691C9.1519 20.208 8.8622 20.0076 8.64055 19.6957C8.41641 19.3803 8.32655 19.042 8.28648 18.6963C8.24994 18.381 8.24997 18.0026 8.25 17.5806L8.25 14.8729C8.25 14.1672 8.24555 13.9349 8.20442 13.7504C8.1082 13.3188 7.90342 12.9744 7.54584 12.6639C7.39014 12.5288 7.15692 12.393 6.48714 12.0159L3.54471 10.3596C3.09549 10.1067 2.71353 9.8917 2.41458 9.68404C2.09724 9.4636 1.82191 9.2177 1.61747 8.87893C1.41148 8.5376 1.32571 8.18206 1.28645 7.80311C1.24996 7.45094 1.24998 7.02863 1.25 6.54012L1.25001 5.81466C1.25001 5.79757 1.25 5.78054 1.25 5.76357C1.24996 5.14396 1.24991 4.60084 1.31251 4.16405C1.38064 3.68856 1.53576 3.23154 1.92618 2.86524C2.30983 2.50529 2.77695 2.36839 3.26024 2.30742C3.71592 2.24994 4.28607 2.24997 4.95301 2.25ZM3.44796 3.79563C3.1143 3.83772 3.0082 3.90691 2.95251 3.95916C2.90359 4.00505 2.83904 4.08585 2.79734 4.37683C2.75181 4.69454 2.75001 5.12868 2.75001 5.81466V6.50448C2.75001 7.03869 2.75093 7.38278 2.77846 7.64854C2.8041 7.89605 2.84813 8.01507 2.90174 8.10391C2.9569 8.19532 3.0485 8.298 3.27034 8.45209C3.50406 8.61444 3.82336 8.79508 4.30993 9.06899L7.22296 10.7088C7.25024 10.7242 7.2771 10.7393 7.30357 10.7542C7.86227 11.0685 8.24278 11.2826 8.5292 11.5312C9.12056 12.0446 9.49997 12.6682 9.66847 13.424C9.75036 13.7913 9.75022 14.2031 9.75002 14.7845C9.75002 14.8135 9.75 14.843 9.75 14.8729V17.5424C9.75 18.0146 9.75117 18.305 9.77651 18.5236C9.79942 18.7213 9.83552 18.7878 9.8633 18.8269C9.89359 18.8695 9.95357 18.9338 10.152 19.0363C10.3644 19.146 10.6571 19.2614 11.1192 19.442C12.0802 19.8177 12.7266 20.0685 13.2164 20.1848C13.695 20.2985 13.8527 20.2396 13.9343 20.1885C14.0023 20.146 14.1073 20.0597 14.1757 19.626C14.2478 19.1686 14.25 18.5234 14.25 17.5424V14.8729C14.25 14.843 14.25 14.8135 14.25 14.7845C14.2498 14.2031 14.2496 13.7913 14.3315 13.424C14.5 12.6682 14.8794 12.0446 15.4708 11.5312C15.7572 11.2826 16.1377 11.0685 16.6964 10.7542C16.7229 10.7393 16.7498 10.7242 16.7771 10.7088L19.6901 9.06899C20.1767 8.79508 20.496 8.61444 20.7297 8.45209C20.9515 8.298 21.0431 8.19532 21.0983 8.10391C21.1519 8.01507 21.1959 7.89605 21.2215 7.64854C21.2491 7.38278 21.25 7.03869 21.25 6.50448V5.81466C21.25 5.12868 21.2482 4.69454 21.2027 4.37683C21.161 4.08585 21.0964 4.00505 21.0475 3.95916C20.9918 3.90691 20.8857 3.83772 20.5521 3.79563C20.2015 3.75141 19.727 3.75 19 3.75H5.00001C4.27297 3.75 3.79854 3.75141 3.44796 3.79563Z"
-                                            fill="#fff"></path>
-                                    </g>
-                                </svg>
+                                <x-icons.filter width="22" height="22" class="text-white" />
                             </button>
                             <form method="GET" class="dropdown-menu p-3" aria-labelledby="filterDropdown"
                                 style="min-width: 220px;">
@@ -87,28 +80,67 @@
                     @if(session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
-                    <div style="max-height: 300px; overflow-y: auto; padding-right: 12px;">
+                    <div class="transactions-container"
+                        style="max-height: 400px; overflow-y: auto; padding-right: 12px;">
                         <ul class="list-group list-group-flush">
                             @forelse ($recentTransactions as $transaction)
                             <li class="list-group-item d-flex justify-content-between align-items-center px-0">
                                 <span>
-                                    <span class="fw-semibold">{{ $transaction->description }}</span>
-                                    <span class="text-muted small d-block">{{ ucfirst($transaction->type) }}</span>
+                                    <div class="d-flex align-items-center mb-1">
+                                        <span
+                                            class="badge bg-{{ \App\Models\Transaction::getTagColor($transaction->tag, Auth::id()) }} me-2">{{ $transaction->tag }}</span>
+                                        <span class="text-muted small">{{ ucfirst($transaction->type) }}</span>
+                                        @if($transaction->image_path)
+                                        <span class="ms-2" title="Has attached image">
+                                            <x-icons.image width="16" height="16" class="text-muted" />
+                                        </span>
+                                        @endif
+                                    </div>
+                                    <span class="fw-semibold">{{ $transaction->description ?: 'No description' }}</span>
                                 </span>
                                 <span>
                                     <span
                                         class="fw-bold {{ $transaction->type === 'income' ? 'text-success' : 'text-danger' }}">
                                         {{ $transaction->type === 'income' ? '+' : '-' }}${{ number_format($transaction->amount, 2) }}
                                     </span>
-                                    <a href="{{ route('transactions.edit', $transaction->id) }}"
-                                        class="btn btn-sm btn-outline-primary ms-2">Edit</a>
-                                    <form action="{{ route('transactions.destroy', $transaction->id) }}" method="POST"
-                                        class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger ms-1"
-                                            onclick="return confirm('Delete this transaction?')">Delete</button>
-                                    </form>
+                                    <div class="dropdown d-inline-block ms-2">
+                                        <button class="btn btn-sm btn-link text-muted p-0 border-0 shadow-none"
+                                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <x-icons.three-dots width="16" height="16" />
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            @if($transaction->image_path)
+                                            <li>
+                                                <button class="dropdown-item d-flex align-items-center" type="button"
+                                                    onclick="viewImage('{{ Storage::url($transaction->image_path) }}', '{{ $transaction->description ?: $transaction->tag }}')">
+                                                    <x-icons.image width="16" height="16" class="me-2 flex-shrink-0" />
+                                                    View Image
+                                                </button>
+                                            </li>
+                                            @endif
+                                            <li>
+                                                <a class="dropdown-item d-flex align-items-center"
+                                                    href="{{ route('transactions.edit', $transaction->id) }}">
+                                                    <x-icons.edit width="16" height="16" class="me-2 flex-shrink-0" />
+                                                    Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <form action="{{ route('transactions.destroy', $transaction->id) }}"
+                                                    method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                        class="dropdown-item d-flex align-items-center delete-btn"
+                                                        onclick="return confirm('Delete this transaction?')">
+                                                        <x-icons.delete width="16" height="16"
+                                                            class="me-2 flex-shrink-0" />
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </span>
                             </li>
                             @empty
@@ -116,7 +148,7 @@
                             @endforelse
                         </ul>
                     </div>
-                    @if ($recentTransactions->count() >= 5)
+                    @if ($recentTransactions->count() >= 6)
                     <div class="text-end mt-2">
                         <small class="text-muted">Scroll to see more transactions</small>
                     </div>
@@ -126,24 +158,329 @@
         </div>
 
         <!-- Quick Links & Visual Summary -->
-        <div class="col-12 col-lg-6">
-            <div class="card border-0 shadow-sm rounded-4 mb-4">
-                <div class="card-body text-center">
-                    <h5 class="card-title mb-3 fw-semibold" style="color: #2563eb;">Quick Links</h5>
+        <div class="col-12 col-lg-6 d-flex flex-column" id="right-dashboard-col">
+            <div class="card border-0 shadow-sm rounded-4 mb-3 flex-shrink-0" id="quick-links-card">
+                <div class="card-body text-center py-3 px-2">
+                    <h5 class="card-title mb-2 fw-semibold" style="color: #2563eb; font-size: 1.1rem;">Quick Links</h5>
                     <a href="{{ route('transactions.create', ['type' => 'income']) }}"
-                        class="btn btn-primary me-2 mb-2">Add Income</a>
+                        class="btn btn-primary me-2 mb-1 btn-sm">Add Income</a>
                     <a href="{{ route('transactions.create', ['type' => 'expense']) }}"
-                        class="btn btn-outline-primary mb-2">Add Expense</a>
+                        class="btn btn-outline-primary mb-1 btn-sm">Add Expense</a>
                 </div>
             </div>
-            <div class="card border-0 shadow-sm rounded-4">
-                <div class="card-body">
-                    <h5 class="card-title mb-3 fw-semibold" style="color: #2563eb;">Spending Categories</h5>
-                    <!-- TODO: Insert chart or visual summary here -->
-                    <div class="text-muted text-center py-4">[Pie Chart Placeholder]</div>
+            <div class="card border-0 shadow-sm rounded-4 flex-grow-1 d-flex flex-column" id="pie-chart-card">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="card-title mb-0 fw-semibold" style="color: #2563eb; font-size: 1.1rem;">Categories
+                        </h5>
+                        <div class="btn-group btn-group-sm" role="group" aria-label="Chart Toggle">
+                            <button type="button" class="btn btn-outline-primary active"
+                                id="toggle-expenses">Expenses</button>
+                            <button type="button" class="btn btn-outline-primary" id="toggle-incomes">Incomes</button>
+                            <button type="button" class="btn btn-outline-primary" id="toggle-both">Both</button>
+                        </div>
+                    </div>
+                    <div class="row flex-grow-1 g-0 flex-nowrap piechart-legend-row">
+                        <div class="col-12 col-md-7 d-flex align-items-center justify-content-center chart-container-col"
+                            style="min-height: 220px;">
+                            <div class="chart-container w-100"
+                                style="position: relative; min-height: 220px; height: 1px; max-width: 340px;">
+                                <canvas id="spendingChart"></canvas>
+                            </div>
+                        </div>
+                        <div
+                            class="col-12 col-md-5 legend-container-col d-flex flex-column justify-content-center align-items-center">
+                            <div class="chart-legend flex-grow-1 legend-vertical-single d-flex flex-column justify-content-center align-items-center"
+                                style="max-height: 320px; overflow-y: auto; width: 100%;">
+                                <div class="legend-list" id="chart-legend-rows">
+                                    {{-- Legend will be rendered by JS --}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="no-data-message" class="text-muted text-center py-4 d-none">
+                        <x-icons.plus-circle width="48" height="48" class="mb-3" />
+                        <p class="mb-0">No data available</p>
+                        <small>Add some transactions to see your breakdown</small>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Image View Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Transaction Receipt</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalImage" src="" alt="Transaction receipt" class="img-fluid" style="max-height: 70vh;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+function viewImage(imageUrl, transactionTitle) {
+    document.getElementById('modalImage').src = imageUrl;
+    document.getElementById('imageModalLabel').textContent = transactionTitle;
+    new bootstrap.Modal(document.getElementById('imageModal')).show();
+}
+
+// Chart data from backend
+const chartDataExpenses = JSON.parse('{!! json_encode($chartDataExpenses) !!}');
+const chartDataIncomes = JSON.parse('{!! json_encode($chartDataIncomes) !!}');
+const chartDataBoth = JSON.parse('{!! json_encode($chartDataBoth) !!}');
+const legendData = {
+    'expenses': JSON.parse('{!! json_encode($spendingByTags) !!}'),
+    'incomes': JSON.parse('{!! json_encode($incomeByTags) !!}'),
+    'both': JSON.parse('{!! json_encode($bothByTags) !!}')
+};
+
+let currentChartType = 'expenses';
+let spendingChart = null;
+
+function renderChart(type) {
+    let data, legendItems;
+    if (type === 'expenses') {
+        data = chartDataExpenses;
+        legendItems = legendData.expenses;
+    } else if (type === 'incomes') {
+        data = chartDataIncomes;
+        legendItems = legendData.incomes;
+    } else {
+        data = chartDataBoth;
+        legendItems = legendData.both;
+    }
+
+    // Show/hide no data message
+    if (data.labels.length === 0) {
+        document.getElementById('spendingChart').classList.add('d-none');
+        document.getElementById('chart-legend-rows').innerHTML = '';
+        document.getElementById('no-data-message').classList.remove('d-none');
+        return;
+    } else {
+        document.getElementById('spendingChart').classList.remove('d-none');
+        document.getElementById('no-data-message').classList.add('d-none');
+    }
+
+    // Destroy previous chart
+    if (spendingChart) {
+        spendingChart.destroy();
+    }
+    const ctx = document.getElementById('spendingChart').getContext('2d');
+    spendingChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: data.labels,
+            datasets: [{
+                data: data.data,
+                backgroundColor: data.backgroundColors,
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return label + ': $' + value.toFixed(2) + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // Render legend
+    const legendRows = document.getElementById('chart-legend-rows');
+    legendRows.innerHTML = '';
+    legendItems.forEach((item, idx) => {
+        const color = data.backgroundColors[idx];
+        const tag = item.tag;
+        let amount = item.total_amount;
+        let amountStr = '';
+        let amountClass = '';
+        if (currentChartType === 'both') {
+            if (amount < 0) {
+                amountStr = '-$' + Math.abs(amount).toFixed(2);
+                amountClass = 'text-danger';
+            } else {
+                amountStr = '+$' + Math.abs(amount).toFixed(2);
+                amountClass = 'text-success';
+            }
+        } else {
+            amountStr = '$' + Math.abs(amount).toFixed(2);
+            amountClass = '';
+        }
+        const div = document.createElement('div');
+        div.className = 'd-flex align-items-center mb-2';
+        div.innerHTML =
+            `<span class=\"badge me-2 chart-tag-badge\" style=\"background-color: ${color};\">${tag}</span><small class=\"text-muted ${amountClass}\">${amountStr}</small>`;
+        legendRows.appendChild(div);
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Chart toggle buttons
+    document.getElementById('toggle-expenses').addEventListener('click', function() {
+        setActiveToggle('expenses');
+        renderChart('expenses');
+    });
+    document.getElementById('toggle-incomes').addEventListener('click', function() {
+        setActiveToggle('incomes');
+        renderChart('incomes');
+    });
+    document.getElementById('toggle-both').addEventListener('click', function() {
+        setActiveToggle('both');
+        renderChart('both');
+    });
+    // Initial chart
+    renderChart('expenses');
+    // Set badge colors for initial legend
+    setTimeout(() => {
+        document.querySelectorAll('.chart-tag-badge').forEach(function(badge) {
+            const color = badge.dataset.color || badge.style.backgroundColor;
+            if (color) {
+                badge.style.backgroundColor = color;
+            }
+        });
+    }, 100);
+    // Dynamic height adjustment
+    adjustCardHeights();
+    window.addEventListener('resize', adjustCardHeights);
+});
+
+function setActiveToggle(type) {
+    currentChartType = type;
+    document.getElementById('toggle-expenses').classList.toggle('active', type === 'expenses');
+    document.getElementById('toggle-incomes').classList.toggle('active', type === 'incomes');
+    document.getElementById('toggle-both').classList.toggle('active', type === 'both');
+}
+
+function adjustCardHeights() {
+    const transactionsCard = document.querySelector('.col-lg-6:first-child .card');
+    const rightCol = document.getElementById('right-dashboard-col');
+    const quickLinksCard = document.getElementById('quick-links-card');
+    const pieChartCard = document.getElementById('pie-chart-card');
+    if (transactionsCard && rightCol && quickLinksCard && pieChartCard) {
+        const transactionsHeight = transactionsCard.offsetHeight;
+        // Set minimum heights
+        const minQuickLinks = 80;
+        const minPieChart = 320;
+        quickLinksCard.style.minHeight = minQuickLinks + 'px';
+        pieChartCard.style.minHeight = minPieChart + 'px';
+        // Make right column match left card height on desktop
+        if (window.innerWidth >= 992) { // lg breakpoint
+            rightCol.style.height = transactionsHeight + 'px';
+            rightCol.style.maxHeight = transactionsHeight + 'px';
+            // Distribute height between quick links and pie chart
+            const quickLinksHeight = quickLinksCard.offsetHeight;
+            pieChartCard.style.height = (transactionsHeight - quickLinksHeight) + 'px';
+        } else {
+            rightCol.style.height = 'auto';
+            rightCol.style.maxHeight = 'none';
+            pieChartCard.style.height = 'auto';
+        }
+    }
+}
+</script>
+
+<style>
+/* Hover effects for dropdown items */
+.dropdown-item:hover {
+    background-color: #e9ecef !important;
+    /* transform: translateX(2px); */
+    transition: all 0.2s ease;
+}
+
+/* Special hover effect for delete button */
+.delete-btn:hover {
+    background-color: #dc3545 !important;
+    color: white !important;
+    /* transform: translateX(2px); */
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+.delete-btn:hover svg {
+    fill: white !important;
+}
+
+/* Chart tag badges */
+.chart-tag-badge {
+    color: white;
+}
+
+/* Responsive adjustments */
+@media (max-width: 991.98px) {
+    .transactions-container {
+        max-height: 300px !important;
+    }
+
+    .chart-container {
+        height: 250px !important;
+    }
+}
+
+@media (min-width: 992px) {
+    .card {
+        transition: height 0.3s ease;
+    }
+}
+
+.piechart-legend-row {
+    flex-wrap: wrap;
+}
+
+.chart-container-col {
+    min-width: 220px;
+    max-width: 340px;
+}
+
+.legend-container-col {
+    min-width: 180px;
+}
+
+.legend-vertical-single .legend-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.legend-vertical-single .legend-list>div {
+    width: 100%;
+    justify-content: flex-start;
+}
+
+@media (max-width: 991.98px) {
+    .legend-vertical-single .legend-list {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+    }
+}
+</style>
 @endsection

@@ -16,11 +16,25 @@ class TransactionSeeder extends Seeder
     {
         $faker = Faker::create();
         $types = ['income', 'expense'];
+        
+        $incomeTags = ['Salary', 'Freelance', 'Investment', 'Gift', 'Bonus', 'Other'];
+        $expenseTags = ['Food', 'Transportation', 'Housing', 'Utilities', 'Entertainment', 'Healthcare', 'Shopping', 'Education', 'Other'];
+        
         $descriptions = [
-            'Salary', 'Freelance Project', 'Groceries', 'Dining Out', 'Electricity Bill',
-            'Internet Bill', 'Gym Membership', 'Coffee', 'Shopping', 'Gift', 'Bonus', 'Rent',
-            'Car Payment', 'Insurance', 'Medical', 'Travel', 'Entertainment', 'Subscription'
+            'Monthly salary payment', 'Freelance web development', 'Grocery shopping', 'Restaurant dinner', 'Electricity bill payment',
+            'Internet service bill', 'Gym membership fee', 'Coffee shop visit', 'Clothing purchase', 'Birthday gift', 'Performance bonus', 'Monthly rent',
+            'Car loan payment', 'Health insurance', 'Medical consultation', 'Vacation trip', 'Movie tickets', 'Netflix subscription'
         ];
+
+        // Update existing transactions that don't have tags
+        $existingTransactions = Transaction::whereNull('tag')->get();
+        foreach ($existingTransactions as $transaction) {
+            $tag = $transaction->type === 'income' 
+                ? $faker->randomElement($incomeTags)
+                : $faker->randomElement($expenseTags);
+            
+            $transaction->update(['tag' => $tag]);
+        }
 
         foreach ([1, 2] as $userId) {
             for ($i = 0; $i < 10; $i++) {
@@ -28,10 +42,16 @@ class TransactionSeeder extends Seeder
                 $amount = $type === 'income'
                     ? $faker->randomFloat(2, 500, 5000)
                     : $faker->randomFloat(2, 10, 500);
+                
+                $tag = $type === 'income' 
+                    ? $faker->randomElement($incomeTags)
+                    : $faker->randomElement($expenseTags);
+                
                 Transaction::create([
                     'description' => $faker->randomElement($descriptions),
                     'amount' => $amount,
                     'type' => $type,
+                    'tag' => $tag,
                     'user_id' => $userId,
                     'created_at' => $faker->dateTimeBetween('-2 months', 'now'),
                     'updated_at' => now(),
