@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Transaction;
 use Faker\Factory as Faker;
+use Carbon\Carbon;
 
 class TransactionSeeder extends Seeder
 {
@@ -37,25 +38,38 @@ class TransactionSeeder extends Seeder
         }
 
         foreach ([1, 2] as $userId) {
-            for ($i = 0; $i < 10; $i++) {
-                $type = $faker->randomElement($types);
-                $amount = $type === 'income'
-                    ? $faker->randomFloat(2, 500, 5000)
-                    : $faker->randomFloat(2, 10, 500);
-                
-                $tag = $type === 'income' 
-                    ? $faker->randomElement($incomeTags)
-                    : $faker->randomElement($expenseTags);
-                
-                Transaction::create([
-                    'description' => $faker->randomElement($descriptions),
-                    'amount' => $amount,
-                    'type' => $type,
-                    'tag' => $tag,
-                    'user_id' => $userId,
-                    'created_at' => $faker->dateTimeBetween('-2 months', 'now'),
-                    'updated_at' => now(),
-                ]);
+            for ($month = 1; $month <= 12; $month++) {
+                $year = 2025;
+                // Income: 2-3 per month
+                for ($i = 0; $i < rand(2, 3); $i++) {
+                    $date = Carbon::create($year, $month, rand(1, 28), rand(0, 23), rand(0, 59));
+                    $tag = $faker->randomElement($incomeTags);
+                    $amount = $faker->randomFloat(2, 1000, 8000);
+                    Transaction::create([
+                        'description' => $faker->randomElement($descriptions),
+                        'amount' => $amount,
+                        'type' => 'income',
+                        'tag' => $tag,
+                        'user_id' => $userId,
+                        'created_at' => $date,
+                        'updated_at' => $date,
+                    ]);
+                }
+                // Expenses: 8-12 per month
+                for ($i = 0; $i < rand(8, 12); $i++) {
+                    $date = Carbon::create($year, $month, rand(1, 28), rand(0, 23), rand(0, 59));
+                    $tag = $faker->randomElement($expenseTags);
+                    $amount = $faker->randomFloat(2, 10, 1200);
+                    Transaction::create([
+                        'description' => $faker->randomElement($descriptions),
+                        'amount' => $amount,
+                        'type' => 'expense',
+                        'tag' => $tag,
+                        'user_id' => $userId,
+                        'created_at' => $date,
+                        'updated_at' => $date,
+                    ]);
+                }
             }
         }
     }
