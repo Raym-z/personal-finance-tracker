@@ -9,7 +9,7 @@ use App\Http\Controllers\BudgetGoalController;
 use App\Http\Controllers\ReportsController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('dashboard');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])

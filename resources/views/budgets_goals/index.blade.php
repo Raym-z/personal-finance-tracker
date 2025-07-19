@@ -118,6 +118,10 @@
                     <div class="mb-3">
                         <div class="d-flex justify-content-between align-items-center">
                             <span class="fw-semibold">{{ $goal->name }}
+                                @if($goal->target_date)
+                                <span class="badge bg-secondary bg-opacity-25 text-secondary period-pill font-size-12"
+                                    style="font-size:0.95em;">{{ \Carbon\Carbon::parse($goal->target_date)->format('M j, Y') }}</span>
+                                @endif
                                 @if($isComplete)
                                 <x-icons.check width="18" height="18" class="text-success ms-1 align-middle" />
                                 @endif
@@ -176,5 +180,9 @@
     border-radius: 12px;
     padding: 2px 10px;
     opacity: 0.7;
+}
+
+.font-size-12 {
+    font-size: 12px !important;
 }
 </style>
