@@ -33,6 +33,17 @@ class Transaction extends Model
      */
     public static function getTagColor($tag, $userId = null)
     {
+        // If user ID is provided, check for custom tags first
+        if ($userId) {
+            $customTags = \App\Models\UserSetting::getSetting($userId, 'custom_tags', []);
+            if (isset($customTags[$tag])) {
+                // Convert hex color to Bootstrap color class
+                $hexColor = $customTags[$tag]['color'];
+                return self::hexToBootstrapColor($hexColor);
+            }
+        }
+
+        // Fallback to default colors for backward compatibility
         $defaultColors = [
             // Income tags
             'Salary' => 'success',
@@ -52,21 +63,6 @@ class Transaction extends Model
             'Shopping' => 'primary',
             'Education' => 'info',
         ];
-
-        // If user ID is provided, check for custom colors and custom tags
-        if ($userId) {
-            // Check for custom tag colors first
-            $customColors = \App\Models\UserSetting::getSetting($userId, 'tag_colors', []);
-            if (isset($customColors[$tag])) {
-                return 'secondary'; // Default to secondary for custom colors in dashboard
-            }
-            
-            // Check for custom tags
-            $customTags = \App\Models\UserSetting::getSetting($userId, 'custom_tags', []);
-            if (isset($customTags[$tag])) {
-                return 'secondary'; // Default to secondary for custom tags in dashboard
-            }
-        }
 
         return $defaultColors[$tag] ?? 'secondary';
     }
@@ -161,27 +157,54 @@ class Transaction extends Model
     }
 
     /**
+     * Convert hex color to Bootstrap color class
+     */
+    private static function hexToBootstrapColor($hexColor)
+    {
+        $colorMap = [
+            '#198754' => 'success',   // Green
+            '#0dcaf0' => 'info',      // Cyan
+            '#0d6efd' => 'primary',   // Blue
+            '#ffc107' => 'warning',   // Yellow
+            '#dc3545' => 'danger',    // Red
+            '#6c757d' => 'secondary', // Gray
+            '#212529' => 'dark',      // Dark
+            '#f8f9fa' => 'light',     // Light
+        ];
+
+        return $colorMap[$hexColor] ?? 'secondary';
+    }
+
+    /**
      * Get all available tags for a user (including custom tags)
      */
     public static function getAllTags($userId = null)
     {
-        $predefinedTags = [
-            'income' => ['Salary', 'Freelance', 'Investment', 'Gift', 'Bonus', 'Other'],
-            'expense' => ['Food', 'Transportation', 'Housing', 'Utilities', 'Entertainment', 'Healthcare', 'Shopping', 'Education', 'Other']
-        ];
-
         if ($userId) {
+            // Get all tags from user settings (now all tags are stored as custom tags)
             $customTags = \App\Models\UserSetting::getSetting($userId, 'custom_tags', []);
+            
+            $incomeTags = [];
+            $expenseTags = [];
             
             foreach ($customTags as $tagName => $tagInfo) {
                 if ($tagInfo['type'] === 'income') {
-                    $predefinedTags['income'][] = $tagName;
+                    $incomeTags[] = $tagName;
                 } else {
-                    $predefinedTags['expense'][] = $tagName;
+                    $expenseTags[] = $tagName;
                 }
             }
+            
+            return [
+                'income' => $incomeTags,
+                'expense' => $expenseTags
+            ];
         }
 
-        return $predefinedTags;
+        // Fallback to predefined tags for backward compatibility
+        return [
+            'income' => ['Salary', 'Freelance', 'Investment', 'Gift', 'Bonus', 'Other'],
+            'expense' => ['Food', 'Transportation', 'Housing', 'Utilities', 'Entertainment', 'Healthcare', 'Shopping', 'Education', 'Other']
+        ];
     }
 }

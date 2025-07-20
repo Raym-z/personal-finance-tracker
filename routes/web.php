@@ -26,9 +26,10 @@ Route::middleware('auth')->group(function () {
     
     // Settings routes
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::post('/settings/tag-colors', [SettingsController::class, 'updateTagColors'])->name('settings.tag-colors');
+
     Route::post('/settings/custom-tags', [SettingsController::class, 'createCustomTag'])->name('settings.custom-tags');
-    Route::delete('/settings/custom-tags', [SettingsController::class, 'deleteCustomTag'])->name('settings.delete-custom-tag');
+    Route::put('/settings/tags/{tag}', [SettingsController::class, 'updateTag'])->name('settings.update-tag');
+    Route::delete('/settings/tags/{tag}', [SettingsController::class, 'deleteTag'])->name('settings.delete-tag');
 
     // Budgets & Goals routes
     Route::get('/budgets-goals', [BudgetGoalController::class, 'index'])->name('budgets_goals.index');

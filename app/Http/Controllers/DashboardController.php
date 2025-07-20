@@ -50,6 +50,9 @@ class DashboardController extends Controller
 
         $totalBalance = $totalIncome - $totalExpenses;
 
+        // --- Savings Goals Calculation ---
+        $savingsGoals = $this->calculateSavingsGoals($user->id);
+
         // --- Pie Chart Data Preparation ---
         // Expenses by tag
         $expensesByTags = Transaction::where('user_id', $user->id)
@@ -116,11 +119,28 @@ class DashboardController extends Controller
         sort($incomeTags);
         sort($expenseTags);
 
+        // Get additional goal and budget data for insights
+        $goals = \App\Models\Goal::where('user_id', $user->id)->get();
+        $budgets = \App\Models\Budget::where('user_id', $user->id)->get();
+        
+        $goalInsights = [
+            'total_goals' => $goals->count(),
+            'completed_goals' => $goals->where('current_amount', '>=', 'target_amount')->count(),
+            'total_progress' => $goals->sum('current_amount'),
+            'total_target' => $goals->sum('target_amount'),
+        ];
+        
+        $budgetInsights = [
+            'total_budgets' => $budgets->count(),
+            'over_budget' => $this->getOverBudgetCategories($user->id),
+            'under_budget' => $this->getUnderBudgetCategories($user->id),
+        ];
+
         return view('dashboard', [
             'totalBalance' => $totalBalance,
             'totalIncome' => $totalIncome,
             'totalExpenses' => $totalExpenses,
-            'savingsGoals' => 0.00, // Placeholder
+            'savingsGoals' => $savingsGoals,
             'recentTransactions' => $recentTransactions,
             'spendingByTags' => $expensesByTags,
             'incomeByTags' => $incomesByTags,
@@ -131,6 +151,8 @@ class DashboardController extends Controller
             'availableTags' => $availableTags,
             'incomeTags' => $incomeTags,
             'expenseTags' => $expenseTags,
+            'goalInsights' => $goalInsights,
+            'budgetInsights' => $budgetInsights,
         ]);
     }
 
@@ -151,5 +173,96 @@ class DashboardController extends Controller
         ];
 
         return $colorMap[$bootstrapColor] ?? '#6c757d';
+    }
+
+    /**
+     * Calculate total savings goals progress
+     */
+    private function calculateSavingsGoals($userId)
+    {
+        // Simply show total progress toward all savings goals
+        $goals = \App\Models\Goal::where('user_id', $userId)->get();
+        return $goals->sum('current_amount');
+    }
+
+    /**
+     * Calculate savings from staying under budget
+     */
+    private function calculateBudgetSavings($userId)
+    {
+        $budgets = \App\Models\Budget::where('user_id', $userId)->get();
+        $totalBudgetSavings = 0;
+        
+        foreach ($budgets as $budget) {
+            // Get expenses for this budget category in the current period
+            $budgetExpenses = \App\Models\Transaction::where('user_id', $userId)
+                ->where('type', 'expense')
+                ->where('tag', $budget->category)
+                ->whereBetween('created_at', [$budget->start_date, $budget->end_date])
+                ->sum('amount');
+                
+            // If we spent less than budget, that's savings
+            if ($budgetExpenses < $budget->amount) {
+                $totalBudgetSavings += ($budget->amount - $budgetExpenses);
+            }
+        }
+        
+        return $totalBudgetSavings;
+    }
+
+    /**
+     * Get categories where user is over budget
+     */
+    private function getOverBudgetCategories($userId)
+    {
+        $budgets = \App\Models\Budget::where('user_id', $userId)->get();
+        $overBudgetCategories = [];
+        
+        foreach ($budgets as $budget) {
+            $budgetExpenses = \App\Models\Transaction::where('user_id', $userId)
+                ->where('type', 'expense')
+                ->where('tag', $budget->category)
+                ->whereBetween('created_at', [$budget->start_date, $budget->end_date])
+                ->sum('amount');
+                
+            if ($budgetExpenses > $budget->amount) {
+                $overBudgetCategories[] = [
+                    'category' => $budget->category,
+                    'budget' => $budget->amount,
+                    'spent' => $budgetExpenses,
+                    'over' => $budgetExpenses - $budget->amount
+                ];
+            }
+        }
+        
+        return $overBudgetCategories;
+    }
+
+    /**
+     * Get categories where user is under budget
+     */
+    private function getUnderBudgetCategories($userId)
+    {
+        $budgets = \App\Models\Budget::where('user_id', $userId)->get();
+        $underBudgetCategories = [];
+        
+        foreach ($budgets as $budget) {
+            $budgetExpenses = \App\Models\Transaction::where('user_id', $userId)
+                ->where('type', 'expense')
+                ->where('tag', $budget->category)
+                ->whereBetween('created_at', [$budget->start_date, $budget->end_date])
+                ->sum('amount');
+                
+            if ($budgetExpenses < $budget->amount) {
+                $underBudgetCategories[] = [
+                    'category' => $budget->category,
+                    'budget' => $budget->amount,
+                    'spent' => $budgetExpenses,
+                    'saved' => $budget->amount - $budgetExpenses
+                ];
+            }
+        }
+        
+        return $underBudgetCategories;
     }
 }

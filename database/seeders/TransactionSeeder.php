@@ -38,11 +38,29 @@ class TransactionSeeder extends Seeder
         }
 
         foreach ([1, 2] as $userId) {
-            for ($month = 1; $month <= 12; $month++) {
-                $year = 2025;
+            $currentDate = Carbon::now();
+            $startDate = Carbon::create(2024, 1, 1); // Start from January 1, 2024
+            
+            // Create transactions for the past year up to today
+            $currentMonth = $startDate->copy();
+            
+            while ($currentMonth->lte($currentDate)) {
+                $year = $currentMonth->year;
+                $month = $currentMonth->month;
+                
                 // Income: 2-3 per month
                 for ($i = 0; $i < rand(2, 3); $i++) {
-                    $date = Carbon::create($year, $month, rand(1, 28), rand(0, 23), rand(0, 59));
+                    // Generate a random day in the current month, but not in the future
+                    $maxDay = min(28, $currentMonth->daysInMonth);
+                    $day = rand(1, $maxDay);
+                    
+                    $date = Carbon::create($year, $month, $day, rand(0, 23), rand(0, 59));
+                    
+                    // Skip if the date is in the future
+                    if ($date->gt($currentDate)) {
+                        continue;
+                    }
+                    
                     $tag = $faker->randomElement($incomeTags);
                     $amount = $faker->randomFloat(2, 1000, 8000);
                     Transaction::create([
@@ -55,9 +73,20 @@ class TransactionSeeder extends Seeder
                         'updated_at' => $date,
                     ]);
                 }
+                
                 // Expenses: 8-12 per month
                 for ($i = 0; $i < rand(8, 12); $i++) {
-                    $date = Carbon::create($year, $month, rand(1, 28), rand(0, 23), rand(0, 59));
+                    // Generate a random day in the current month, but not in the future
+                    $maxDay = min(28, $currentMonth->daysInMonth);
+                    $day = rand(1, $maxDay);
+                    
+                    $date = Carbon::create($year, $month, $day, rand(0, 23), rand(0, 59));
+                    
+                    // Skip if the date is in the future
+                    if ($date->gt($currentDate)) {
+                        continue;
+                    }
+                    
                     $tag = $faker->randomElement($expenseTags);
                     $amount = $faker->randomFloat(2, 10, 1200);
                     Transaction::create([
@@ -70,6 +99,9 @@ class TransactionSeeder extends Seeder
                         'updated_at' => $date,
                     ]);
                 }
+                
+                // Move to next month
+                $currentMonth->addMonth();
             }
         }
     }

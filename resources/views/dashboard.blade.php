@@ -14,25 +14,29 @@
         <div class="col-12 col-md-3">
             <div class="card border-0 shadow-sm rounded-4 text-center py-4">
                 <div class="fw-semibold text-secondary mb-2">Total Balance</div>
-                <div class="fs-3 fw-bold" style="color: #2563eb;">${{ number_format($totalBalance, 2) }}</div>
+                <div class="fs-4 fw-bold" style="color: #2563eb;">${{ number_format($totalBalance, 2) }}</div>
+                <small class="text-muted">Income minus expenses</small>
             </div>
         </div>
         <div class="col-12 col-md-3">
             <div class="card border-0 shadow-sm rounded-4 text-center py-4">
                 <div class="fw-semibold text-secondary mb-2">Total Income</div>
                 <div class="fs-4 fw-bold text-success">${{ number_format($totalIncome, 2) }}</div>
+                <small class="text-muted">All time earnings</small>
             </div>
         </div>
         <div class="col-12 col-md-3">
             <div class="card border-0 shadow-sm rounded-4 text-center py-4">
                 <div class="fw-semibold text-secondary mb-2">Total Expenses</div>
                 <div class="fs-4 fw-bold text-danger">${{ number_format($totalExpenses, 2) }}</div>
+                <small class="text-muted">All time spending</small>
             </div>
         </div>
         <div class="col-12 col-md-3">
             <div class="card border-0 shadow-sm rounded-4 text-center py-4">
-                <div class="fw-semibold text-secondary mb-2">Savings Goals</div>
+                <div class="fw-semibold text-secondary mb-2">Goal Progress</div>
                 <div class="fs-4 fw-bold" style="color: #1a202c;">${{ number_format($savingsGoals, 2) }}</div>
+                <small class="text-muted">Total saved toward goals</small>
             </div>
         </div>
     </div>
@@ -122,14 +126,17 @@
                                 class="badge bg-secondary px-3 py-2 fw-semibold">{{ request('sort') == 'asc' ? 'Oldest First' : 'Most Recent' }}</span>
                             @endif
                             <a href="{{ route('dashboard') }}"
-                                class="badge bg-light text-dark text-decoration-none px-3 py-2 border fw-semibold">Clear
+                                class="btn btn-sm btn-outline-secondary text-decoration-none px-3 py-2 fw-semibold">Clear
                                 All</a>
                         </div>
                     </div>
                     @endif
 
                     @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
+                    <div class="alert alert-success alert-dismissible fade show" id="successAlert" role="alert">
+                        {{ session('success') }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                     @endif
                     <div class="transactions-container"
                         style="max-height: 400px; overflow-y: auto; padding-right: 12px;">
@@ -148,6 +155,7 @@
                                         @endif
                                     </div>
                                     <span class="fw-semibold">{{ $transaction->description ?: 'No description' }}</span>
+                                    <div class="text-muted small">{{ $transaction->created_at->diffForHumans() }}</div>
                                 </span>
                                 <span>
                                     <span
@@ -518,6 +526,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize dynamic tag filtering
     initializeTagFiltering();
+
+    // Auto-dismiss success alert after 10 seconds
+    const successAlert = document.getElementById('successAlert');
+    if (successAlert) {
+        setTimeout(() => {
+            const alert = new bootstrap.Alert(successAlert);
+            alert.close();
+        }, 10000); // 10 seconds
+    }
 
     // Initial chart
     renderChart('expenses');

@@ -90,6 +90,7 @@ class TransactionController extends Controller
             'amount' => 'required|numeric|min:0.01',
             'type' => 'required|in:income,expense',
             'tag' => 'required|string|max:100',
+            'transaction_date' => 'nullable|date',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -105,6 +106,12 @@ class TransactionController extends Controller
             'tag' => $request->input('tag'),
             'user_id' => $user->id,
         ];
+
+        // Handle custom date if provided, otherwise use current time
+        if ($request->filled('transaction_date')) {
+            $data['created_at'] = $request->input('transaction_date');
+            $data['updated_at'] = $request->input('transaction_date');
+        }
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -199,6 +206,7 @@ class TransactionController extends Controller
             'amount' => 'required|numeric|min:0.01',
             'type' => 'required|in:income,expense',
             'tag' => 'required|string|max:100',
+            'transaction_date' => 'nullable|date',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -215,6 +223,12 @@ class TransactionController extends Controller
             'type' => $request->input('type'),
             'tag' => $request->input('tag'),
         ];
+
+        // Handle custom date if provided, otherwise keep existing date
+        if ($request->filled('transaction_date')) {
+            $data['created_at'] = $request->input('transaction_date');
+            $data['updated_at'] = now(); // Always update the updated_at timestamp
+        }
 
         // Handle image upload
         if ($request->hasFile('image')) {

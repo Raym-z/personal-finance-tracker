@@ -55,6 +55,15 @@
                         </div>
 
                         <div class="mb-3">
+                            <x-input-label for="transaction_date" :value="__('Date (Optional)')" />
+                            <x-text-input id="transaction_date" name="transaction_date" type="datetime-local"
+                                class="form-control mt-1"
+                                value="{{ old('transaction_date', $transaction ? $transaction->created_at->format('Y-m-d\TH:i') : '') }}" />
+                            <small class="text-muted">Leave empty to use current date and time</small>
+                            <x-input-error :messages="$errors->get('transaction_date')" class="mt-2" />
+                        </div>
+
+                        <div class="mb-3">
                             <x-input-label for="description" :value="__('Description (Optional)')" />
                             <x-text-input id="description" name="description" type="text" class="form-control mt-1"
                                 value="{{ old('description', $transaction->description ?? '') }}" />
@@ -124,12 +133,6 @@ function updateTagOptions() {
             const option = document.createElement('option');
             option.value = tag;
             option.textContent = tag;
-
-            // Add color styling if available
-            if (tagColors[tag]) {
-                option.style.color = tagColors[tag];
-                option.style.fontWeight = 'bold';
-            }
 
             tagSelect.appendChild(option);
         });

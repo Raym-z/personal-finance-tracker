@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Database\Seeders\DefaultTagsSeeder;
 
 /**
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Transaction[] $transactions
@@ -56,5 +57,18 @@ class User extends Authenticatable
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    /**
+     * Boot the model and add event listeners
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Create default tags when a user is created
+        static::created(function ($user) {
+            DefaultTagsSeeder::createDefaultTagsForUser($user->id);
+        });
     }
 }
