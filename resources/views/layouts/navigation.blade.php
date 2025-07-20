@@ -9,7 +9,7 @@
             Finance Tracker
         </a>
         <div class="d-flex align-items-center">
-            <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('transactions.index') }}">Transactions</a>
+            <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('transactions.create') }}">Transactions</a>
             <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('budgets_goals.index') }}">Budgets & Goals</a>
             <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('reports.index') }}">Reports & Insights</a>
             <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('settings.index') }}">Settings</a>

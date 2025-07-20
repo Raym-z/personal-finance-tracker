@@ -12,6 +12,16 @@
                     <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
 
+                    @if($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
                     <!-- Custom Tag Creation -->
                     <div class="mb-3">
                         <h4 class="fw-semibold mb-3">Create Custom Tags</h4>
@@ -53,34 +63,7 @@
                     </div>
                     </form>
 
-                    @if(!empty($customTags))
-                    <div class="mt-4">
-                        <h5 class="fw-semibold mb-3">Your Custom Tags</h5>
-                        <div class="row">
-                            @foreach($customTags as $tag => $tagInfo)
-                            <div class="col-md-6 mb-2">
-                                <div class="d-flex align-items-center justify-content-between p-2 border rounded">
-                                    <div class="d-flex align-items-center">
-                                        <span class="badge me-2 custom-tag-badge"
-                                            data-color="{{ $tagInfo['color'] }}">{{ $tag }}</span>
-                                        <small class="text-muted">{{ ucfirst($tagInfo['type']) }}</small>
-                                    </div>
-                                    <form method="POST" action="{{ route('settings.delete-custom-tag') }}"
-                                        class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="tag_name" value="{{ $tag }}">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Delete this custom tag?')">
-                                            <x-icons.delete width="14" height="14" />
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
-                    @endif
+
                 </div>
 
                 <!-- Tag Color Customization -->
@@ -98,11 +81,13 @@
                                 <h5 class="fw-semibold mb-3 text-success">Income Tags</h5>
                                 @foreach(['Salary', 'Freelance', 'Investment', 'Gift', 'Bonus', 'Other'] as $tag)
                                 <div class="mb-3">
-                                    <label for="tag_{{ $tag }}" class="form-label d-flex align-items-center">
-                                        <span class="badge me-2 tag-preview" id="preview_{{ $tag }}"
-                                            data-color="{{ $tagColors[$tag] ?? '#6c757d' }}"></span>
-                                        {{ $tag }}
-                                    </label>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label for="tag_{{ $tag }}" class="form-label d-flex align-items-center mb-0">
+                                            <span class="badge me-2 tag-preview" id="preview_{{ $tag }}"
+                                                data-color="{{ $tagColors[$tag] ?? '#6c757d' }}"></span>
+                                            {{ $tag }}
+                                        </label>
+                                    </div>
                                     <div class="d-flex gap-2 align-items-center">
                                         <input type="color" name="tag_colors[{{ $tag }}]" id="tag_{{ $tag }}"
                                             class="form-control form-control-color"
@@ -115,6 +100,35 @@
                                             style="flex: 1;">
                                     </div>
                                 </div>
+                                @endforeach
+
+                                <!-- Custom Income Tags -->
+                                @foreach($customTags as $tag => $tagInfo)
+                                @if($tagInfo['type'] === 'income')
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label for="tag_{{ $tag }}" class="form-label d-flex align-items-center mb-0">
+                                            <span class="badge me-2 tag-preview" id="preview_{{ $tag }}"
+                                                data-color="{{ $tagInfo['color'] }}"></span>
+                                            {{ $tag }}
+                                            <small class="text-muted ms-2">(Custom)</small>
+                                        </label>
+                                        <button type="button" class="btn btn-sm delete-tag-btn"
+                                            onclick="deleteCustomTag('{{ $tag }}')" title="Delete tag">
+                                            <x-icons.delete width="14" height="14" />
+                                        </button>
+                                    </div>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <input type="color" name="tag_colors[{{ $tag }}]" id="tag_{{ $tag }}"
+                                            class="form-control form-control-color" value="{{ $tagInfo['color'] }}"
+                                            onchange="updatePreview('{{ $tag }}', this.value)"
+                                            style="width: 60px; height: 40px;">
+                                        <input type="text" class="form-control" value="{{ $tagInfo['color'] }}"
+                                            onchange="updateColorPicker('{{ $tag }}', this.value)" placeholder="#000000"
+                                            style="flex: 1;">
+                                    </div>
+                                </div>
+                                @endif
                                 @endforeach
                             </div>
 
@@ -124,11 +138,13 @@
                                 @foreach(['Food', 'Transportation', 'Housing', 'Utilities', 'Entertainment',
                                 'Healthcare', 'Shopping', 'Education', 'Other'] as $tag)
                                 <div class="mb-3">
-                                    <label for="tag_{{ $tag }}" class="form-label d-flex align-items-center">
-                                        <span class="badge me-2 tag-preview" id="preview_{{ $tag }}"
-                                            data-color="{{ $tagColors[$tag] ?? '#6c757d' }}"></span>
-                                        {{ $tag }}
-                                    </label>
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label for="tag_{{ $tag }}" class="form-label d-flex align-items-center mb-0">
+                                            <span class="badge me-2 tag-preview" id="preview_{{ $tag }}"
+                                                data-color="{{ $tagColors[$tag] ?? '#6c757d' }}"></span>
+                                            {{ $tag }}
+                                        </label>
+                                    </div>
                                     <div class="d-flex gap-2 align-items-center">
                                         <input type="color" name="tag_colors[{{ $tag }}]" id="tag_{{ $tag }}"
                                             class="form-control form-control-color"
@@ -142,12 +158,40 @@
                                     </div>
                                 </div>
                                 @endforeach
+
+                                <!-- Custom Expense Tags -->
+                                @foreach($customTags as $tag => $tagInfo)
+                                @if($tagInfo['type'] === 'expense')
+                                <div class="mb-3">
+                                    <div class="d-flex align-items-center justify-content-between">
+                                        <label for="tag_{{ $tag }}" class="form-label d-flex align-items-center mb-0">
+                                            <span class="badge me-2 tag-preview" id="preview_{{ $tag }}"
+                                                data-color="{{ $tagInfo['color'] }}"></span>
+                                            {{ $tag }}
+                                            <small class="text-muted ms-2">(Custom)</small>
+                                        </label>
+                                        <button type="button" class="btn btn-sm delete-tag-btn"
+                                            onclick="deleteCustomTag('{{ $tag }}')" title="Delete tag">
+                                            <x-icons.delete width="14" height="14" />
+                                        </button>
+                                    </div>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <input type="color" name="tag_colors[{{ $tag }}]" id="tag_{{ $tag }}"
+                                            class="form-control form-control-color" value="{{ $tagInfo['color'] }}"
+                                            onchange="updatePreview('{{ $tag }}', this.value)"
+                                            style="width: 60px; height: 40px;">
+                                        <input type="text" class="form-control" value="{{ $tagInfo['color'] }}"
+                                            onchange="updateColorPicker('{{ $tag }}', this.value)" placeholder="#000000"
+                                            style="flex: 1;">
+                                    </div>
+                                </div>
+                                @endif
+                                @endforeach
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mt-4">
-                            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">Back to
-                                Dashboard</a>
+                            <a href="{{ route('dashboard') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
                             <button type="submit" class="btn btn-primary">Save Changes</button>
                         </div>
                     </form>
@@ -165,9 +209,9 @@
 }
 
 .custom-input {
-    border: 1px solid #ced4da !important;
+    border: 1px solid #6c757d !important;
     background: #fff !important;
-    border-radius: 0.5rem !important;
+    border-radius: 0.375rem !important;
     box-shadow: none !important;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
@@ -185,9 +229,8 @@
 }
 
 .custom-color-input {
-    border: 1px solid #ced4da !important;
+    border: 1px solid #6c757d !important;
     border-radius: 0.375rem !important;
-    /* matches Bootstrap's rounded-3 */
     background: #fff !important;
     box-shadow: none !important;
     transition: border-color 0.2s, box-shadow 0.2s;
@@ -197,6 +240,93 @@
     border-color: #0d6efd !important;
     box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25) !important;
     outline: none !important;
+}
+
+/* Ensure all form controls have consistent styling */
+.form-control {
+    border: 1px solid #6c757d !important;
+    border-radius: 0.375rem !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25) !important;
+    outline: none !important;
+}
+
+.form-select {
+    border: 1px solid #6c757d !important;
+    border-radius: 0.375rem !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-select:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25) !important;
+    outline: none !important;
+}
+
+.form-control-color {
+    border: 1px solid #6c757d !important;
+    border-radius: 0.375rem !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control-color:focus {
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, .25) !important;
+    outline: none !important;
+}
+
+/* Modern Delete Button Styling */
+.delete-tag-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    color: white !important;
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 4px rgba(238, 90, 82, 0.2) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.delete-tag-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.delete-tag-btn:hover {
+    background: linear-gradient(135deg, #ff5252, #d32f2f) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 8px rgba(238, 90, 82, 0.3) !important;
+}
+
+.delete-tag-btn:hover::before {
+    left: 100%;
+}
+
+.delete-tag-btn:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 4px rgba(238, 90, 82, 0.2) !important;
+}
+
+.delete-tag-btn svg {
+    fill: white !important;
+    transition: transform 0.2s ease !important;
+}
+
+.delete-tag-btn:hover svg {
+    transform: scale(1.1) !important;
 }
 
 .piechart-legend-wrapper {
@@ -226,13 +356,49 @@
 </style>
 
 <script>
+function deleteCustomTag(tagName) {
+    if (confirm('Delete this custom tag?')) {
+        // Create a form dynamically
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("settings.delete-custom-tag") }}';
+
+        // Add CSRF token
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+
+        // Add method override
+        const methodField = document.createElement('input');
+        methodField.type = 'hidden';
+        methodField.name = '_method';
+        methodField.value = 'DELETE';
+        form.appendChild(methodField);
+
+        // Add tag name
+        const tagNameField = document.createElement('input');
+        tagNameField.type = 'hidden';
+        tagNameField.name = 'tag_name';
+        tagNameField.value = tagName;
+        form.appendChild(tagNameField);
+
+        // Submit the form
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
 function updatePreview(tag, color) {
     const preview = document.getElementById(`preview_${tag}`);
     const textInput = preview.parentElement.nextElementSibling.querySelector('input[type="text"]');
+    const colorPicker = document.getElementById(`tag_${tag}`);
 
     preview.style.backgroundColor = color;
     preview.dataset.color = color;
     textInput.value = color;
+    colorPicker.value = color;
 
     // Update text color for contrast
     const luminance = getLuminance(color);
@@ -272,16 +438,6 @@ document.addEventListener('DOMContentLoaded', function() {
             preview.style.backgroundColor = color;
             const luminance = getLuminance(color);
             preview.style.color = luminance > 0.5 ? '#000000' : '#ffffff';
-        }
-    });
-
-    // Set initial colors for custom tag badges
-    document.querySelectorAll('.custom-tag-badge').forEach(function(badge) {
-        const color = badge.dataset.color;
-        if (color) {
-            badge.style.backgroundColor = color;
-            const luminance = getLuminance(color);
-            badge.style.color = luminance > 0.5 ? '#000000' : '#ffffff';
         }
     });
 });

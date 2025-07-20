@@ -19,6 +19,15 @@ class DashboardController extends Controller
             $query->where('type', $request->type);
         }
 
+        // Filter by tags (support multiple tags)
+        if ($request->filled('tags')) {
+            $tags = is_array($request->tags) ? $request->tags : [$request->tags];
+            $query->whereIn('tag', $tags);
+        } elseif ($request->filled('tag')) {
+            // Backward compatibility for single tag
+            $query->where('tag', $request->tag);
+        }
+
         // Filter by date range
         if ($request->filled('from')) {
             $query->whereDate('created_at', '>=', $request->from);
@@ -73,12 +82,20 @@ class DashboardController extends Controller
                 'colors' => [],
                 'backgroundColors' => []
             ];
+            
+            // Calculate total for percentage calculation
+            $total = $tagData->sum('total_amount');
+            
             foreach ($tagData as $item) {
+                $amount = abs($item->total_amount);
+                $percentage = ($amount / $total) * 100;
+                
+                // Include all segments, but ensure minimum display size for very small ones
                 $chartData['labels'][] = $item->tag;
-                $chartData['data'][] = round(abs($item->total_amount), 2); // always positive for chart
+                $chartData['data'][] = round($amount, 2);
                 $tagColor = Transaction::getTagColor($item->tag, $user->id);
                 $chartData['colors'][] = $tagColor;
-                $hexColor = $this->getBootstrapColorHex($tagColor);
+                $hexColor = Transaction::getTagHexColor($item->tag, $user->id);
                 $chartData['backgroundColors'][] = $hexColor;
             }
             return $chartData;
@@ -87,6 +104,17 @@ class DashboardController extends Controller
         $chartDataExpenses = $prepareChartData($expensesByTags);
         $chartDataIncomes = $prepareChartData($incomesByTags);
         $chartDataBoth = $prepareChartData($bothByTags);
+
+        // Get all available tags for filtering (including custom tags)
+        $allTags = Transaction::getAllTags($user->id);
+        $availableTags = array_merge($allTags['income'], $allTags['expense']);
+        sort($availableTags);
+        
+        // Get tags by type for dynamic filtering
+        $incomeTags = $allTags['income'];
+        $expenseTags = $allTags['expense'];
+        sort($incomeTags);
+        sort($expenseTags);
 
         return view('dashboard', [
             'totalBalance' => $totalBalance,
@@ -100,6 +128,9 @@ class DashboardController extends Controller
             'chartDataExpenses' => $chartDataExpenses,
             'chartDataIncomes' => $chartDataIncomes,
             'chartDataBoth' => $chartDataBoth,
+            'availableTags' => $availableTags,
+            'incomeTags' => $incomeTags,
+            'expenseTags' => $expenseTags,
         ]);
     }
 

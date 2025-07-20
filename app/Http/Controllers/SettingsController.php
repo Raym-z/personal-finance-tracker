@@ -19,7 +19,7 @@ class SettingsController extends Controller
         // Get custom tags
         $customTags = UserSetting::getSetting($user->id, 'custom_tags', []);
         
-        // Merge with default colors (convert Bootstrap classes to hex)
+        // Define default colors
         $defaultColors = [
             // Income tags
             'Salary' => '#198754',
@@ -55,11 +55,55 @@ class SettingsController extends Controller
         
         $allTagColors = array_merge($defaultColors, $customTagColors);
         
+        // Organize tags by type for unified display
+        $incomeTags = [];
+        $expenseTags = [];
+        
+        // Add default income tags
+        $defaultIncomeTags = ['Salary', 'Freelance', 'Investment', 'Gift', 'Bonus', 'Other'];
+        foreach ($defaultIncomeTags as $tag) {
+            $incomeTags[$tag] = [
+                'name' => $tag,
+                'color' => $allTagColors[$tag] ?? '#6c757d',
+                'is_custom' => false,
+                'type' => 'income'
+            ];
+        }
+        
+        // Add default expense tags
+        $defaultExpenseTags = ['Food', 'Transportation', 'Housing', 'Utilities', 'Entertainment', 'Healthcare', 'Shopping', 'Education', 'Other'];
+        foreach ($defaultExpenseTags as $tag) {
+            $expenseTags[$tag] = [
+                'name' => $tag,
+                'color' => $allTagColors[$tag] ?? '#6c757d',
+                'is_custom' => false,
+                'type' => 'expense'
+            ];
+        }
+        
+        // Add custom tags to their respective categories
+        foreach ($customTags as $tag => $tagInfo) {
+            $tagData = [
+                'name' => $tag,
+                'color' => $tagInfo['color'],
+                'is_custom' => true,
+                'type' => $tagInfo['type']
+            ];
+            
+            if ($tagInfo['type'] === 'income') {
+                $incomeTags[$tag] = $tagData;
+            } else {
+                $expenseTags[$tag] = $tagData;
+            }
+        }
+        
         return view('settings', [
             'tagColors' => $allTagColors,
             'defaultColors' => $defaultColors,
             'customColors' => $customTagColors,
             'customTags' => $customTags,
+            'incomeTags' => $incomeTags,
+            'expenseTags' => $expenseTags,
         ]);
     }
 

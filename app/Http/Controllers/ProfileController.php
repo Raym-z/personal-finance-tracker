@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use App\Models\User;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class ProfileController extends Controller
 {
@@ -33,6 +34,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
+        /** @var User $user */
         $user = Auth::user();
         
         $request->validate([
@@ -63,6 +65,7 @@ class ProfileController extends Controller
             'password' => 'required|string|min:8|confirmed',
         ]);
 
+        /** @var User $user */
         $user = Auth::user();
         $user->password = Hash::make($request->password);
         $user->save();
@@ -79,6 +82,7 @@ class ProfileController extends Controller
             'password' => 'required|current_password',
         ]);
 
+        /** @var User $user */
         $user = Auth::user();
         
         // Logout the user

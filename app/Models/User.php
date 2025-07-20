@@ -9,6 +9,10 @@ use Illuminate\Notifications\Notifiable;
 
 /**
  * @property \Illuminate\Database\Eloquent\Collection|\App\Models\Transaction[] $transactions
+ * @method static \Illuminate\Database\Eloquent\Builder query()
+ * @method bool save(array $options = [])
+ * @method bool delete()
+ * @method bool update(array $attributes = [], array $options = [])
  */
 class User extends Authenticatable
 {

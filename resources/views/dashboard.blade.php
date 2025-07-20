@@ -51,11 +51,11 @@
                                 style="width: 48px; height: 48px;">
                                 <x-icons.filter width="22" height="22" class="text-white" />
                             </button>
-                            <form method="GET" class="dropdown-menu p-3" aria-labelledby="filterDropdown"
-                                style="min-width: 220px;">
+                            <form method="GET" class="dropdown-menu p-3 border-0 shadow-lg"
+                                aria-labelledby="filterDropdown" style="min-width: 280px; border-radius: 12px;">
                                 <div class="mb-2">
                                     <label for="type" class="form-label mb-0">Type:</label>
-                                    <select name="type" id="type" class="form-select form-select-sm">
+                                    <select name="type" id="type" class="form-select form-select-sm rounded-3">
                                         <option value="">All</option>
                                         <option value="income" {{ request('type') == 'income' ? 'selected' : '' }}>
                                             Income</option>
@@ -64,19 +64,70 @@
                                     </select>
                                 </div>
                                 <div class="mb-2">
+                                    <label class="form-label mb-0">Tags:</label>
+                                    <div id="tag-checkboxes" class="border rounded-3 p-2"
+                                        style="max-height: 150px; overflow-y: auto; display: none;">
+                                        <div class="form-check form-check-sm">
+                                            <input class="form-check-input" type="checkbox" id="select-all-tags"
+                                                value="">
+                                            <label class="form-check-label fw-semibold" for="select-all-tags">
+                                                Select All
+                                            </label>
+                                        </div>
+                                        <hr class="my-2">
+                                        <div id="tag-options">
+                                            <!-- Tag options will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                    <small class="text-muted" id="tag-help">Select a type first to filter by
+                                        tags</small>
+                                </div>
+                                <div class="mb-2">
                                     <label for="sort" class="form-label mb-0">Sort:</label>
-                                    <select name="sort" id="sort" class="form-select form-select-sm">
+                                    <select name="sort" id="sort" class="form-select form-select-sm rounded-3">
                                         <option value="desc" {{ request('sort', 'desc') == 'desc' ? 'selected' : '' }}>
                                             Most Recent</option>
                                         <option value="asc" {{ request('sort') == 'asc' ? 'selected' : '' }}>Oldest
                                         </option>
                                     </select>
                                 </div>
-                                <button type="submit"
-                                    class="btn btn-sm btn-primary w-100 mt-2 rounded-pill">Apply</button>
+                                <div class="d-flex gap-2">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-primary flex-grow-1 rounded-3">Apply</button>
+                                    <a href="{{ route('dashboard') }}" class="btn btn-sm btn-danger rounded-2">Clear</a>
+                                </div>
                             </form>
                         </div>
                     </div>
+
+                    <!-- Active Filters Display -->
+                    @if(request('type') || request('tags') || request('tag') || request('sort') != 'desc')
+                    <div class="mb-3">
+                        <div class="d-flex flex-wrap gap-2 align-items-center">
+                            <small class="text-muted me-2">Active filters:</small>
+                            @if(request('type'))
+                            <span class="badge bg-primary px-3 py-2 fw-semibold">{{ ucfirst(request('type')) }}</span>
+                            @endif
+                            @if(request('tags'))
+                            @foreach(request('tags') as $tag)
+                            <span
+                                class="badge bg-{{ \App\Models\Transaction::getTagColor($tag, Auth::id()) }} px-3 py-2 fw-semibold">{{ $tag }}</span>
+                            @endforeach
+                            @elseif(request('tag'))
+                            <span
+                                class="badge bg-{{ \App\Models\Transaction::getTagColor(request('tag'), Auth::id()) }} px-3 py-2 fw-semibold">{{ request('tag') }}</span>
+                            @endif
+                            @if(request('sort') && request('sort') != 'desc')
+                            <span
+                                class="badge bg-secondary px-3 py-2 fw-semibold">{{ request('sort') == 'asc' ? 'Oldest First' : 'Most Recent' }}</span>
+                            @endif
+                            <a href="{{ route('dashboard') }}"
+                                class="badge bg-light text-dark text-decoration-none px-3 py-2 border fw-semibold">Clear
+                                All</a>
+                        </div>
+                    </div>
+                    @endif
+
                     @if(session('success'))
                     <div class="alert alert-success">{{ session('success') }}</div>
                     @endif
@@ -237,6 +288,83 @@ function viewImage(imageUrl, transactionTitle) {
     new bootstrap.Modal(document.getElementById('imageModal')).show();
 }
 
+// Tag data from backend
+const incomeTags = JSON.parse('{!! json_encode($incomeTags) !!}');
+const expenseTags = JSON.parse('{!! json_encode($expenseTags) !!}');
+
+function initializeTagFiltering() {
+    const typeSelect = document.getElementById('type');
+    const tagCheckboxes = document.getElementById('tag-checkboxes');
+    const tagHelp = document.getElementById('tag-help');
+
+    // Set initial state based on current type selection
+    updateTagOptions();
+
+    // Add event listener for type changes
+    typeSelect.addEventListener('change', function() {
+        updateTagOptions();
+    });
+
+    // Handle "Select All" checkbox
+    document.getElementById('select-all-tags').addEventListener('change', function() {
+        const checkboxes = document.querySelectorAll('#tag-options input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = this.checked;
+        });
+    });
+}
+
+function updateTagOptions() {
+    const typeSelect = document.getElementById('type');
+    const tagCheckboxes = document.getElementById('tag-checkboxes');
+    const tagOptions = document.getElementById('tag-options');
+    const tagHelp = document.getElementById('tag-help');
+    const selectAllCheckbox = document.getElementById('select-all-tags');
+    const selectedType = typeSelect.value;
+
+    // Clear existing options
+    tagOptions.innerHTML = '';
+    selectAllCheckbox.checked = false;
+
+    if (selectedType === 'income') {
+        // Show tag checkboxes and populate with income tags
+        tagCheckboxes.style.display = 'block';
+        tagHelp.style.display = 'none';
+
+        incomeTags.forEach(tag => {
+            const div = document.createElement('div');
+            div.className = 'form-check form-check-sm';
+            div.innerHTML = `
+                <input class="form-check-input" type="checkbox" name="tags[]" id="tag-${tag}" value="${tag}">
+                <label class="form-check-label" for="tag-${tag}">
+                    ${tag}
+                </label>
+            `;
+            tagOptions.appendChild(div);
+        });
+    } else if (selectedType === 'expense') {
+        // Show tag checkboxes and populate with expense tags
+        tagCheckboxes.style.display = 'block';
+        tagHelp.style.display = 'none';
+
+        expenseTags.forEach(tag => {
+            const div = document.createElement('div');
+            div.className = 'form-check form-check-sm';
+            div.innerHTML = `
+                <input class="form-check-input" type="checkbox" name="tags[]" id="tag-${tag}" value="${tag}">
+                <label class="form-check-label" for="tag-${tag}">
+                    ${tag}
+                </label>
+            `;
+            tagOptions.appendChild(div);
+        });
+    } else {
+        // No type selected, hide tag checkboxes
+        tagCheckboxes.style.display = 'none';
+        tagHelp.style.display = 'block';
+    }
+}
+
 // Chart data from backend
 const chartDataExpenses = JSON.parse('{!! json_encode($chartDataExpenses) !!}');
 const chartDataIncomes = JSON.parse('{!! json_encode($chartDataIncomes) !!}');
@@ -293,6 +421,7 @@ function renderChart(type) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            cutout: '60%',
             plugins: {
                 legend: {
                     display: false
@@ -308,36 +437,67 @@ function renderChart(type) {
                         }
                     }
                 }
+            },
+            // Ensure small segments are still visible
+            elements: {
+                arc: {
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }
             }
         }
     });
 
-    // Render legend
+    // Render legend - show all items with percentages
     const legendRows = document.getElementById('chart-legend-rows');
     legendRows.innerHTML = '';
-    legendItems.forEach((item, idx) => {
-        const color = data.backgroundColors[idx];
-        const tag = item.tag;
-        let amount = item.total_amount;
-        let amountStr = '';
-        let amountClass = '';
-        if (currentChartType === 'both') {
-            if (amount < 0) {
-                amountStr = '-$' + Math.abs(amount).toFixed(2);
-                amountClass = 'text-danger';
+
+    // Create a map of tag names to legend items for easy lookup
+    const legendMap = {};
+    legendItems.forEach(item => {
+        legendMap[item.tag] = item;
+    });
+
+    // Calculate total for percentage
+    const total = data.data.reduce((sum, value) => sum + value, 0);
+
+    // Render legend items that correspond to chart data
+    data.labels.forEach((label, idx) => {
+        const legendItem = legendMap[label];
+        if (legendItem) {
+            const color = data.backgroundColors[idx];
+            const tag = label;
+            let amount = legendItem.total_amount;
+            let amountStr = '';
+            let amountClass = '';
+
+            if (currentChartType === 'both') {
+                if (amount < 0) {
+                    amountStr = '-$' + Math.abs(amount).toFixed(2);
+                    amountClass = 'text-danger';
+                } else {
+                    amountStr = '+$' + Math.abs(amount).toFixed(2);
+                    amountClass = 'text-success';
+                }
+                // Don't show percentage for 'both' filter
+                const div = document.createElement('div');
+                div.className = 'd-flex align-items-center mb-2';
+                div.innerHTML =
+                    `<span class=\"badge me-2 chart-tag-badge\" style=\"background-color: ${color};\">${tag}</span><small class=\"text-muted ${amountClass}\">${amountStr}</small>`;
+                legendRows.appendChild(div);
             } else {
-                amountStr = '+$' + Math.abs(amount).toFixed(2);
-                amountClass = 'text-success';
+                // Calculate percentage only for income/expense filters
+                const percentage = ((Math.abs(amount) / total) * 100).toFixed(1);
+                amountStr = '$' + Math.abs(amount).toFixed(2);
+                amountClass = '';
+
+                const div = document.createElement('div');
+                div.className = 'd-flex align-items-center mb-2';
+                div.innerHTML =
+                    `<span class=\"badge me-2 chart-tag-badge\" style=\"background-color: ${color};\">${tag}</span><small class=\"text-muted ${amountClass}\">${amountStr} (${percentage}%)</small>`;
+                legendRows.appendChild(div);
             }
-        } else {
-            amountStr = '$' + Math.abs(amount).toFixed(2);
-            amountClass = '';
         }
-        const div = document.createElement('div');
-        div.className = 'd-flex align-items-center mb-2';
-        div.innerHTML =
-            `<span class=\"badge me-2 chart-tag-badge\" style=\"background-color: ${color};\">${tag}</span><small class=\"text-muted ${amountClass}\">${amountStr}</small>`;
-        legendRows.appendChild(div);
     });
 }
 
@@ -355,6 +515,10 @@ document.addEventListener('DOMContentLoaded', function() {
         setActiveToggle('both');
         renderChart('both');
     });
+
+    // Initialize dynamic tag filtering
+    initializeTagFiltering();
+
     // Initial chart
     renderChart('expenses');
     // Set badge colors for initial legend
@@ -430,6 +594,56 @@ function adjustCardHeights() {
 /* Chart tag badges */
 .chart-tag-badge {
     color: white;
+}
+
+/* Enhanced filter interface styling */
+.form-select.rounded-3 {
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease;
+}
+
+.form-select.rounded-3:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+#tag-checkboxes {
+    border: 1px solid #dee2e6 !important;
+    background-color: #f8f9fa;
+    transition: all 0.2s ease;
+}
+
+#tag-checkboxes:hover {
+    border-color: #adb5bd !important;
+}
+
+.form-check-input:checked {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.form-check-input:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Enhanced button styling */
+.btn.rounded-3 {
+    transition: all 0.2s ease;
+}
+
+.btn.rounded-3:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-danger.rounded-2 {
+    transition: all 0.2s ease;
+}
+
+.btn-danger.rounded-2:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
 }
 
 /* Responsive adjustments */
