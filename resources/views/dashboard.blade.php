@@ -4,8 +4,8 @@
 <div class="container py-5">
     <div class="row mb-2">
         <div class="col-12 col-md-8">
-            <h1 class="fw-bold mb-3" style="color: #1a202c;">Welcome back, {{ Auth::user()->name }}!</h1>
-            <p class="text-muted mb-4">Here's an overview of your finances at a glance.</p>
+            <h1 class="fw-bold mb-3" style="color: #1a202c;">Your Financial Dashboard</h1>
+            <p class="text-muted mb-4">Track your money, reach your goals, build your future.</p>
         </div>
     </div>
 
