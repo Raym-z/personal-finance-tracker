@@ -1,0 +1,16 @@
+Purpose: Keep users informed about important events (budget limits, goal progress).
+
+Key Features:
+
+-   In-app notifications or email alerts
+-   Customizable notification preferences
+
+Best Practices:
+
+-   Allow users to opt in/out
+-   Make notifications timely and actionable
+    description:
+    globs:
+    alwaysApply: false
+
+---

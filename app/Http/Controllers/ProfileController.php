@@ -2,59 +2,95 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Display the user's profile page
      */
-    public function edit(Request $request): View
+    public function index()
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = Auth::user();
+        return view('profile.index', compact('user'));
     }
 
     /**
-     * Update the user's profile information.
+     * Show the form for editing the user's profile
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function edit()
     {
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-        $request->user()->save();
-
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        $user = Auth::user();
+        return view('profile.edit', compact('user'));
     }
 
     /**
-     * Delete the user's account.
+     * Update the user's profile information
      */
-    public function destroy(Request $request): RedirectResponse
+    public function update(Request $request)
     {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
+        $user = Auth::user();
+        
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->ignore($user->id),
+            ],
         ]);
 
-        $user = $request->user();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->save();
 
+        return redirect()->route('profile.edit')->with('success', 'Profile updated successfully!');
+    }
+
+    /**
+     * Update the user's password
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return redirect()->route('profile.edit')->with('success', 'Password updated successfully!');
+    }
+
+    /**
+     * Delete the user's account
+     */
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|current_password',
+        ]);
+
+        $user = Auth::user();
+        
+        // Logout the user
         Auth::logout();
-
+        
+        // Delete the user
         $user->delete();
-
+        
+        // Invalidate session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return redirect()->route('login')->with('success', 'Account deleted successfully!');
     }
 }

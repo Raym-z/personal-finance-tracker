@@ -13,7 +13,7 @@
             <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('budgets_goals.index') }}">Budgets & Goals</a>
             <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('reports.index') }}">Reports & Insights</a>
             <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('settings.index') }}">Settings</a>
-            <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('profile.edit') }}">Profile</a>
+            <a class="nav-link fw-semibold text-dark mx-3" href="{{ route('profile.index') }}">Profile</a>
             <form method="POST" action="{{ route('logout') }}" class="d-inline mb-0">
                 @csrf
                 <button type="submit" class="btn nav-link text-danger mx-3 p-0"
